@@ -376,12 +376,15 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}')
 
-    # Move tensors and model to the device
+    # Move tensors, model, and data to the device
     adj_mat = adj_mat.to(device)
     net = net.to(device)
     embed = embed.to(device)
-
-    inputs = embed.weight
+    inputs = embed.weight.to(device)
+    
+    # If the DGL graph needs to be on GPU
+    if graph_dgl is not None:
+        graph_dgl = graph_dgl.to(device)
 
     # Tracking
     best_cost = torch.tensor(float('Inf'), device=device)  # high initialization
