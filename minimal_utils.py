@@ -372,29 +372,15 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
     print(f'Function run_gnn_training(): Setting seed to {seed}')
     set_seed(seed)
 
-    # Check if GPU is available and set the device
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f'Using device: {device}')
-
-    # Move tensors, model, and data to the device
-    adj_mat = adj_mat.to(device)
-    net = net.to(device)
-    embed = embed.to(device)
-    inputs = embed.weight.to(device)
-    
-    if graph_dgl is not None:
-        graph_dgl = graph_dgl.to(device)
-
-    if nx_graph is not None:
-        nx_graph = nx_graph.to(device)
+    inputs = embed.weight
 
     # Tracking
-    best_cost = torch.tensor(float('Inf'), device=device)  # high initialization
-    best_loss = torch.tensor(float('Inf'), device=device)
+    best_cost = torch.tensor(float('Inf'))  # high initialization
+    best_loss = torch.tensor(float('Inf'))
     best_coloring = None
 
     # Early stopping to allow NN to train to near-completion
-    prev_loss = torch.tensor(1.0, device=device)  # initial loss value (arbitrary)
+    prev_loss = 1.  # initial loss value (arbitrary)
     cnt = 0  # track number times early stopping is triggered
 
     # Training logic
