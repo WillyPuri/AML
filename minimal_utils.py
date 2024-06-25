@@ -382,9 +382,11 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
     embed = embed.to(device)
     inputs = embed.weight.to(device)
     
-    # If the DGL graph needs to be on GPU
     if graph_dgl is not None:
         graph_dgl = graph_dgl.to(device)
+
+    if nx_graph is not None:
+        nx_graph = nx_graph.to(device)
 
     # Tracking
     best_cost = torch.tensor(float('Inf'), device=device)  # high initialization
