@@ -474,10 +474,6 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             quick_save_model = QuickSaveModel(f'quick_{problem_type}_{epoch}')
             quick_save_model(loss, epoch, net, optimizer, loss_func_mod, loss_func_color_hard)
 
-    elapsed_time = time.time()-t0
-    print("epoch: %d, time(s): %.4f, train loss: %.6f, train metric: %.6f, vali loss: %.6f, vali metric: %.6f"
-          % (epoch+1, elapsed_time, train_loss, train_metric, vali_loss, vali_metric))
-
     # Print final loss
     print('Epoch %d | Final loss: %.5f' % (epoch, loss.item()))
     print('Epoch %d | Lowest discrete cost: %.5f' % (epoch, best_cost))
