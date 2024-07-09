@@ -411,7 +411,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
 
     inputs = embed.weight
     # ADDED
-    save_best_model = SaveBestModel('problem_type')
+    save_best_model = SaveBestModel(f'{problem_type}')
 
     # Tracking
     best_cost = torch.tensor(float('Inf'))  # high initialization
