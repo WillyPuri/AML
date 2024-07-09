@@ -331,8 +331,51 @@ def loss_func_color_hard(coloring, nx_graph):
         cost_ += 1*(coloring[u] == coloring[v])*(u != v)
     return cost_
 
+# THE FOLLOWING 2 FUNCTIONS WERE WRITTEN FROM SCRATCH
+class SaveBestModel:
+    def __init__(self, model_name='MODELNAME', best_valid_loss=float('inf')): #object initialized with best_loss = +infinite
+        self.best_valid_loss = best_valid_loss
+        self.model_name = model_name
+    def __call__(
+        self, current_valid_loss,
+        epoch, model, optimizer, criterion, metric,
+    ):
+        if current_valid_loss < self.best_valid_loss:
+            self.best_valid_loss = current_valid_loss
+
+            print(f"\nBest validation loss: {self.best_valid_loss}")
+            print(f"\nSaving best model for epoch: {epoch+1}\n")
+
+            # method to save a model (the state_dict: a python dictionary object that
+            # maps each layer to its parameter tensor) and other useful parametrers
+            # see: https://pytorch.org/tutorials/beginner/saving_loading_models.html
+
+            torch.save({'model' : model,
+                'epoch': epoch+1,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': criterion,
+                'metric': metric,
+                }, 'best_model_'+self.model_name+'.pt')
+            
+class QuickSaveModel:
+    def __init__(self, model_name='MODELNAME'):
+        self.model_name = model_name
+    def __call__(
+        self, current_valid_loss,
+        epoch, model, optimizer, criterion, metric,
+    ):
+        torch.save({'model' : model,
+                'epoch': epoch+1,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': criterion,
+                'metric': metric,
+                }, self.model_name+'.pt')
+
 # CHANGED THE EPOCHS FROM int(1e5) TO 3000
-def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
+# ADDED PROBLEM_TYPE TO SAVE THE MODELS EVERY 1000 EPOCHS
+def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
                      number_epochs=3000, patience=1000, tolerance=1e-4, seed=1):
     """
     Function to run model training for given graph, GNN, optimizer, and set of hypers.
@@ -367,6 +410,8 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
     set_seed(seed)
 
     inputs = embed.weight
+    # ADDED
+    save_best_model = SaveBestModel('problem_type')
 
     # Tracking
     best_cost = torch.tensor(float('Inf'))  # high initialization
@@ -419,11 +464,19 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
         optimizer.zero_grad()  # clear gradient for step
         loss.backward()  # calculate gradient through compute graph
         optimizer.step()  # take step, update weights
-
+        
+        # ADDED
+        save_best_model(loss, epoch, net, optimizer, loss_func_mod, loss_func_color_hard)
         # tracking: print intermediate loss at regular interval
         if epoch % 1000 == 0:
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
             print('Epoch %d | Discrete Cost: %.5f' % (epoch, cost_hard.item()))
+            quick_save_model = QuickSaveModel(f'quick_{problem_type}_{epoch}')
+            quick_save_model(loss, epoch, net, optimizer, loss_func_mod, loss_func_color_hard)
+
+    elapsed_time = time.time()-t0
+    print("epoch: %d, time(s): %.4f, train loss: %.6f, train metric: %.6f, vali loss: %.6f, vali metric: %.6f"
+          % (epoch+1, elapsed_time, train_loss, train_metric, vali_loss, vali_metric))
 
     # Print final loss
     print('Epoch %d | Final loss: %.5f' % (epoch, loss.item()))
