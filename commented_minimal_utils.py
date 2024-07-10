@@ -376,7 +376,7 @@ class QuickSaveModel:
 # CHANGED THE EPOCHS FROM int(1e5) TO 3000
 # ADDED PROBLEM_TYPE TO SAVE THE MODELS EVERY 1000 EPOCHS
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
-                     number_epochs=3000, patience=1000, tolerance=1e-4, seed=1):
+                     number_epochs=int(1e5), patience=1000, tolerance=1e-4, seed=1):
     """
     Function to run model training for given graph, GNN, optimizer, and set of hypers.
     Includes basic early stopping criteria. Prints regular updates on progress as well as
