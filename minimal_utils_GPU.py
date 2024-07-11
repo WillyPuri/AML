@@ -345,8 +345,8 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
     Includes basic early stopping criteria. Prints regular updates on progress as well as
     final decision.
 
-    :param nx_graph: Graph instance to solve
-    :param graph_dgl: Graph instance to solve
+    :param nx_graph: Graph instance to solve (NetworkX graph, CPU only)
+    :param graph_dgl: Graph instance to solve (DGL graph, moved to GPU if available)
     :param adj_mat: Adjacency matrix for provided graph
     :type adj_mat: torch.tensor
     :param net: GNN instance to train
@@ -385,12 +385,12 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
     inputs = embed.weight
 
     # Tracking
-    best_cost = torch.tensor(float('Inf')).to(device)  # high initialization
-    best_loss = torch.tensor(float('Inf')).to(device)
+    best_cost = torch.tensor(float('Inf'), device=device)  # high initialization
+    best_loss = torch.tensor(float('Inf'), device=device)
     best_coloring = None
 
     # Early stopping to allow NN to train to near-completion
-    prev_loss = 1.  # initial loss value (arbitrary)
+    prev_loss = torch.tensor(1.0, device=device)  # initial loss value (arbitrary)
     cnt = 0  # track number times early stopping is triggered
 
     # Training logic
@@ -408,7 +408,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer,
         # get cost based on current hard class assignments
         # update cost if applicable
         coloring = torch.argmax(probs, dim=1)
-        cost_hard = loss_func_color_hard(coloring, nx_graph)
+        cost_hard = loss_func_color_hard(coloring, nx_graph)  # NetworkX graph, CPU only
 
         if cost_hard < best_cost:
             best_loss = loss
