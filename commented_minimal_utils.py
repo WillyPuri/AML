@@ -57,9 +57,9 @@ def get_adjacency_matrix(nx_graph, torch_device, torch_dtype):
     :param nx_graph: Graph object to pull adjacency matrix for
     :type nx_graph: networkx.OrderedGraph. This creates an indirect graph with nodes labeled with numbers.
     :param torch_device: Compute device to map computations onto (CPU vs GPU)
-    :type torch_dtype: torch.float32
-    :param torch_dtype: Specification of pytorch datatype to use for matrix
     :type torch_dtype: str
+    :param torch_dtype: Specification of pytorch datatype to use for matrix
+    :type torch_dtype: str (Typically used 'torch.float32')
     :return: Adjacency matrix for provided graph
     :rtype: torch.tensor
     """
@@ -103,28 +103,29 @@ def build_graph_from_color_file(fname, node_offset=-1, parent_fpath=''):
     :rtype: networkx.OrderedGraph
     """
 
-    fpath = os.path.join(parent_fpath, fname)
+    fpath = os.path.join(parent_fpath, fname)                                                      # Create the path to read the file
 
     print(f'Building graph from contents of file: {fpath}')
-    with open(fpath, 'r') as f:
-        content = f.read().strip()
+    with open(fpath, 'r') as f:                                                                    # Reads the entire contents of the file and stores it in the 'content' variable.
+        content = f.read().strip()                                                                 #  The strip() method removes any whitespace at the beginning and end of the content.
 
-    # Identify where problem definition starts.
-    # All lines prior to this are assumed to be miscellaneous descriptions of file contents
-    # which start with "c ".
-    start_idx = [idx for idx, line in enumerate(content.split('\n')) if line.startswith('p')][0]
-    lines = content.split('\n')[start_idx:]  # skip comment line(s)
-    edges = [parse_line(line, node_offset) for line in lines[1:] if len(line) > 0]
+    # Identify where problem definition starts.                                                     
+    # All lines prior to this are assumed to be miscellaneous descriptions of file contents        
+    # which start with "c ".                                                                       # Splits the rows using '\n' as split and creates a list containing the indices of rows starting with 'p'.
+    start_idx = [idx for idx, line in enumerate(content.split('\n')) if line.startswith('p')][0]   # The value [0] of that list is then taken as the starting point.
+    lines = content.split('\n')[start_idx:]  # skip comment line(s)                                # lines contains all lines from the first 'p' (inclusive) onwards.
+    edges = [parse_line(line, node_offset) for line in lines[1:] if len(line) > 0]                 # edges skips the first line (the one starting with 'p') and extracts the numbers of the connected 
+                                                                                                   # nodes using parse_line
 
-    nx_temp = nx.from_edgelist(edges)
+    nx_temp = nx.from_edgelist(edges)                                                              # Creating graphs from lists of edges.
 
-    ### Modificati da me
-    from collections import OrderedDict
-    nx_graph = nx.Graph(node_dict=OrderedDict(), edge_dict=OrderedDict())
-    ###
+    ##################### MODIFIED ########################################
+    from collections import OrderedDict                                                            # Creating an ordered graph.
+    nx_graph = nx.Graph(node_dict=OrderedDict(), edge_dict=OrderedDict())                          # This ensures that nodes and edges maintain the order in which they are added.
+    #######################################################################
     
-    nx_graph.add_nodes_from(sorted(nx_temp.nodes()))
-    nx_graph.add_edges_from(nx_temp.edges)
+    nx_graph.add_nodes_from(sorted(nx_temp.nodes()))                                               # Import nodes into ordered graph.
+    nx_graph.add_edges_from(nx_temp.edges)                                                         # Import edges into ordered graph.
 
     return nx_graph
 
