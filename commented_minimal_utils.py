@@ -35,7 +35,7 @@ chromatic_numbers = {
     'pubmed.cites': 8
 }
 
-
+# The following function is not used in the main code
 def set_seed(seed):
     """
     Sets random seeds for training.
@@ -43,21 +43,21 @@ def set_seed(seed):
     :param seed: Integer used for seed.
     :type seed: int
     """
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
+    random.seed(seed)                      # Initializing a function that randomly calls a real number in [0,1) 
+    np.random.seed(seed)                   # Initializing the numpy library to create random numbers uniformly distributed in [0,1)
+    torch.manual_seed(seed)                # Returns a torch generator of random numbers on all cpu devices
     if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
-
+        torch.cuda.manual_seed_all(seed)   # Returns a torch generator of random numbers on all gpu devices
 
 def get_adjacency_matrix(nx_graph, torch_device, torch_dtype):
     """
     Pre-load adjacency matrix, map to torch device
-
+    
+    The easier tool to build a graph is networkx. It requires to insert manually nodes and edges. Then it is converted to a dgl graph in the main code.
     :param nx_graph: Graph object to pull adjacency matrix for
-    :type nx_graph: networkx.OrderedGraph
+    :type nx_graph: networkx.OrderedGraph. This creates an indirect graph with nodes labeled with numbers.
     :param torch_device: Compute device to map computations onto (CPU vs GPU)
-    :type torch_dtype: str
+    :type torch_dtype: torch.float32
     :param torch_dtype: Specification of pytorch datatype to use for matrix
     :type torch_dtype: str
     :return: Adjacency matrix for provided graph
@@ -66,7 +66,7 @@ def get_adjacency_matrix(nx_graph, torch_device, torch_dtype):
     # Since networkx returns a sparse matrix, to have a regular matrix format 
     # I need to add some 0 where they're omitted with .todense()
     adj = nx.linalg.graphmatrix.adjacency_matrix(nx_graph).todense()
-    adj_ = torch.tensor(adj).type(torch_dtype).to(torch_device)
+    adj_ = torch.tensor(adj).type(torch_dtype).to(torch_device) # moving the created matrix to the specified device
 
     return adj_
 
@@ -84,7 +84,7 @@ def parse_line(file_line, node_offset):
     :return: Set of nodes connected by edge defined in the line (i.e. node_from, node_to)
     :rtype: int, int
     """
-
+    # Colums are delimited by whitespace and only the 2nd and 3rd should be considered as the first one signals that the numbers label the ordered edges
     x, y = file_line.split(' ')[1:]  # skip first character - specifies each line is an edge definition
     x, y = int(x)+node_offset, int(y)+node_offset  # nodes in file are 1-indexed, whereas python is 0-indexed
     return x, y
