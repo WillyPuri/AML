@@ -299,7 +299,7 @@ def loss_func_mod(probs, adj_tensor):
     """
     Function to compute cost value based on soft assignments (probabilities)
 
-    :param probs: Probability vector, of each node belonging to each class                             # It is a matrix that indicates for each node which color it has.
+    :param probs: Probability vector, of each node belonging to each class
     :type probs: torch.tensor
     :param adj_tensor: Adjacency matrix, containing internode weights
     :type adj_tensor: torch.tensor
@@ -308,9 +308,9 @@ def loss_func_mod(probs, adj_tensor):
     """
 
     # Multiply probability vectors, then filter via elementwise application of adjacency matrix.
-    #  Divide by 2 to adjust for symmetry about the diagonal
-    loss_ = torch.mul(adj_tensor, (probs @ probs.T)).sum() / 2
-
+    #  Divide by 2 to adjust for symmetry about the diagonal                                            # H_{potts} discussed in the paper. probs is not one-hot encoded variables, but probabilities.
+    loss_ = torch.mul(adj_tensor, (probs @ probs.T)).sum() / 2                                          # This is the difference between soft and hard loss, one uses the probabilities tensor and one                                          
+                                                                                                        # the one-hot encoded representation.
     return loss_
 
 
