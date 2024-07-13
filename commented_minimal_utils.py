@@ -332,7 +332,7 @@ def loss_func_color_hard(coloring, nx_graph):
         cost_ += 1*(coloring[u] == coloring[v])*(u != v)                                                # should it be devided by 2 (bidirectional graph)?
     return cost_
 
-# THE FOLLOWING 2 FUNCTIONS WERE WRITTEN FROM SCRATCH
+#################################################### ADDED ##############################################################
 class SaveBestModel:
     def __init__(self, model_name='MODELNAME', best_loss=float('inf')): #object initialized with best_loss = +infinite
         self.best_loss = best_loss
@@ -358,23 +358,8 @@ class SaveBestModel:
                 'loss': criterion,
                 'metric': metric,
                 }, 'best_model_'+self.model_name+'.pt')
-            
-class QuickSaveModel:
-    def __init__(self, model_name='MODELNAME'):
-        self.model_name = model_name
-    def __call__(
-        self, current_loss,
-        epoch, model, optimizer, criterion, metric,
-    ):
-        torch.save({'model' : model,
-                'epoch': epoch+1,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'loss': criterion,
-                'metric': metric,
-                }, self.model_name+'.pt')
+####################################################################################################################
 
-# ADDED PROBLEM_TYPE TO SAVE THE MODELS EVERY 1000 EPOCHS
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
                      number_epochs=int(1e5), patience=1000, tolerance=1e-4, seed=1):
     """
@@ -484,8 +469,6 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
         if epoch % 1000 == 0:
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
             print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
-            quick_save_model = QuickSaveModel(f'quick_{problem_type}_{epoch}')
-            quick_save_model(loss, epoch, net, optimizer, loss_func_mod, loss_func_color_hard)
 
     # Print final loss
     print('Epoch %d | Final loss: %.5f' % (epoch, loss.item()))
