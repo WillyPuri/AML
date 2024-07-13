@@ -345,7 +345,7 @@ class SaveBestModel:
             self.best_loss = current_loss
 
             #print(f"\nBest validation loss: {self.best_loss}")
-            print(f"\nSaving best model for epoch: {epoch+1}\n")
+            print(f"\nSaving best model for epoch: {epoch+1}")
 
             # method to save a model (the state_dict: a python dictionary object that
             # maps each layer to its parameter tensor) and other useful parametrers
