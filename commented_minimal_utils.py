@@ -332,46 +332,19 @@ def loss_func_color_hard(coloring, nx_graph):
         cost_ += 1*(coloring[u] == coloring[v])*(u != v)                                                # should it be devided by 2 (bidirectional graph)?
     return cost_
 
-
-class SaveBestModel:
-    def __init__(self, best_valid_loss=float('inf')): #object initialized with best_loss = +infinite
-        self.best_valid_loss = best_valid_loss
-
-    def __call__(
-        self, current_valid_loss,
-        epoch, model, optimizer, criterion, metric,
-    ):
-        if current_valid_loss < self.best_valid_loss:
-            self.best_valid_loss = current_valid_loss
-
-            print(f"\nBest validation loss: {self.best_valid_loss}")
-            print(f"\nSaving best model for epoch: {epoch+1}\n")
-
-            # method to save a model (the state_dict: a python dictionary object that
-            # maps each layer to its parameter tensor) and other useful parametrers
-            # see: https://pytorch.org/tutorials/beginner/saving_loading_models.html
-
-            torch.save({'model' : model,
-                'epoch': epoch+1,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'loss': criterion,
-                'metric': metric,
-                }, 'best_model.pt')
-
 # THE FOLLOWING 2 FUNCTIONS WERE WRITTEN FROM SCRATCH
 class SaveBestModel:
-    def __init__(self, model_name='MODELNAME', best_valid_loss=float('inf')): #object initialized with best_loss = +infinite
-        self.best_valid_loss = best_valid_loss
+    def __init__(self, model_name='MODELNAME', best_loss=float('inf')): #object initialized with best_loss = +infinite
+        self.best_loss = best_loss
         self.model_name = model_name
     def __call__(
-        self, current_valid_loss,
+        self, current_loss,
         epoch, model, optimizer, criterion, metric,
     ):
-        if current_valid_loss < self.best_valid_loss:
-            self.best_valid_loss = current_valid_loss
+        if current_loss < self.best_loss:
+            self.best_loss = current_loss
 
-            #print(f"\nBest validation loss: {self.best_valid_loss}")
+            #print(f"\nBest validation loss: {self.best_loss}")
             print(f"\nSaving best model for epoch: {epoch+1}\n")
 
             # method to save a model (the state_dict: a python dictionary object that
