@@ -439,6 +439,11 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
         # apply softmax for normalization
         probs = F.softmax(logits, dim=1)
 
+        if epoch == 0:
+            print(logits)
+            print('----------------------------------------------------')
+            print(probs)
+
         # get cost value with POTTS cost function
         loss = loss_func_mod(probs, adj_mat)
 
