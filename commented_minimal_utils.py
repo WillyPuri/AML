@@ -402,8 +402,9 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     :type tolerance: float
 
     :return: Final model probabilities, best color vector found during training, best loss found during training,
-    final color vector of training, final loss of training, number of epochs used in training
-    :rtype: torch.tensor, torch.tensor, torch.tensor, torch.tensor, torch.tensor, int
+    final color vector of training, final loss of training, number of epochs used in training,
+    loss_list, epoch_list
+    :rtype: torch.tensor, torch.tensor, torch.tensor, torch.tensor, torch.tensor, int, list, list
     """
 
     # Ensure RNG seeds are reset each training run
@@ -422,6 +423,10 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     # Early stopping to allow NN to train to near-completion
     prev_loss = 1.  # initial loss value (arbitrary)
     cnt = 0  # track number times early stopping is triggered
+
+    # Initialize lists to track losses and epochs
+    loss_list = []
+    epoch_list = []
 
     # IN THE FOLLOWING THE HARD_LOSS (H_potts IN THE PAPER) IS CALLED cost_hard, 
     # WHILE THE L_potts IS THE SO CALLED loss
@@ -468,6 +473,12 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
         
         # ADDED
         save_best_model(loss, epoch, net, optimizer, loss_func_mod, loss_func_color_hard)
+        
+
+        # Append current loss and epoch to lists
+        loss_list.append(loss.item())
+        epoch_list.append(epoch)
+        
         # tracking: print intermediate loss at regular interval
         if epoch % 1000 == 0:
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
@@ -484,4 +495,4 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     final_coloring = torch.argmax(probs, 1)
     print(f'Final coloring: {final_coloring}, soft loss: {final_loss}')
 
-    return probs, best_coloring, best_loss, final_coloring, final_loss, epoch
+    return probs, best_coloring, best_loss, final_coloring, final_loss, epoch, loss_list, epoch_list
