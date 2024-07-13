@@ -434,10 +434,10 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     for epoch in range(number_epochs):
 
         # get soft prob assignments
-        logits = net(inputs)
+        logits = net(inputs)                                                                 #
 
         # apply softmax for normalization
-        probs = F.softmax(logits, dim=1)
+        probs = F.softmax(logits, dim=1)                                                     # 
 
         # get cost value with POTTS cost function
         loss = loss_func_mod(probs, adj_mat)
