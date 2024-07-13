@@ -434,7 +434,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     for epoch in range(number_epochs):
 
         # get soft prob assignments
-        logits = net(inputs)                                                                 #
+        logits = net(inputs)                                                                 # Get the values from the model ()
 
         # apply softmax for normalization
         probs = F.softmax(logits, dim=1)                                                     # 
