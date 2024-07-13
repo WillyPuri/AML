@@ -119,7 +119,7 @@ def build_graph_from_color_file(fname, node_offset=-1, parent_fpath=''):
 
     nx_temp = nx.from_edgelist(edges)                                                              # Creating graphs from lists of edges.
 
-    ##################### MODIFIED ########################################
+    ############################# MODIFIED ################################
     from collections import OrderedDict                                                            # Creating an ordered graph.
     nx_graph = nx.Graph(node_dict=OrderedDict(), edge_dict=OrderedDict())                          # This ensures that nodes and edges maintain the order in which they are added.
     #######################################################################
