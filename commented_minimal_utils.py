@@ -434,8 +434,6 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             best_cost = cost_hard
             best_coloring = coloring
             SaveBestModel(epoch, net,embed, nx_graph, optimizer, best_coloring, problem_type)
-            print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
-            print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
 
         # Early stopping check
         # If loss increases or change in loss is too small, trigger
