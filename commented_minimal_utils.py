@@ -328,8 +328,8 @@ def loss_func_color_hard(coloring, nx_graph):
     """
 
     cost_ = 0
-    for (u, v) in nx_graph.edges:
-        cost_ += 1*(coloring[u] == coloring[v])*(u != v)
+    for (u, v) in nx_graph.edges:                                                                       # Loop over the edges. The cost is incremented if two linked nodes share the same color.
+        cost_ += 1*(coloring[u] == coloring[v])*(u != v)                                                # should it be devided by 2 (bidirectional graph)?
     return cost_
 
 # THE FOLLOWING 2 FUNCTIONS WERE WRITTEN FROM SCRATCH
