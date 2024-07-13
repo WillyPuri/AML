@@ -360,7 +360,7 @@ def LoadSavedModel(file_path):
 ####################################################################################################################
 
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
-                     number_epochs=int(1e5), patience=1000, tolerance=1e-4, seed=1):
+                     number_epochs=int(1e5), patience=1000, tolerance=1e-4, seed=1, best_cost = torch.tensor(float('Inf'))):
     """
     Function to run model training for given graph, GNN, optimizer, and set of hypers.
     Includes basic early stopping criteria. Prints regular updates on progress as well as
@@ -397,7 +397,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     inputs = embed.weight
 
     # Tracking
-    best_cost = torch.tensor(float('Inf'))  # high initialization
+    #best_cost = torch.tensor(float('Inf'))  # high initialization
     best_loss = torch.tensor(float('Inf'))
     best_coloring = None
 
@@ -434,7 +434,9 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             best_cost = cost_hard
             best_coloring = coloring
             SaveBestModel(epoch, net,embed, nx_graph, optimizer, best_coloring, problem_type)
-
+            print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
+            print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
+            
         # Early stopping check
         # If loss increases or change in loss is too small, trigger
         if (abs(loss - prev_loss) <= tolerance) | ((loss - prev_loss) > 0):
