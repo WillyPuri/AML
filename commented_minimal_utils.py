@@ -156,17 +156,17 @@ class GNNSage(nn.Module):
         :type agg_type: str
         """
         
-        super(GNNSage, self).__init__()
+        super(GNNSage, self).__init__()                                                                  # Ensures that all necessary inherited components are configured correctly.
 
         self.g = g
         self.num_classes = num_classes
         
-        self.layers = nn.ModuleList()
+        self.layers = nn.ModuleList()                                                                    # Create an (empty) list 'ModuleList', which will keep track of all the layers that the model is composed of.
         # input layer
-        self.layers.append(SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu))
+        self.layers.append(SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu))                 # Adds a SAGEConv layer from the dgl.nn.pytorch library with relu activation function and aggregation 'mean'
         # output layer
-        self.layers.append(SAGEConv(hidden_size, num_classes, agg_type))
-        self.dropout = nn.Dropout(p=dropout)
+        self.layers.append(SAGEConv(hidden_size, num_classes, agg_type))                                 # Adds a SAGEConv layer from the dgl.nn.pytorch library with aggregation 'mean' but without relu activation function.
+        self.dropout = nn.Dropout(p=dropout)                                                             # Dropout to avoid overfitting.
 
     def forward(self, features):
         """
@@ -178,11 +178,11 @@ class GNNSage(nn.Module):
         :return: Final layer representation, pre-activation (i.e. class logits)
         :rtype: torch.tensor
         """
-        h = features
-        for i, layer in enumerate(self.layers):
-            if i != 0:
-                h = self.dropout(h)
-            h = layer(self.g, h)
+        h = features                                                                                      
+        for i, layer in enumerate(self.layers):                                                           # Network with only one hidden layer the architecture is:
+            if i != 0:                                                                                    # SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu)
+                h = self.dropout(h)                                                                       # Dropout(p=dropout)
+            h = layer(self.g, h)                                                                          # SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu)
 
         return h
 
@@ -207,18 +207,18 @@ class GNNConv(nn.Module):
         :type hidden_size: int
         :param num_classes: Size of output layer (one node per class)
         :type num_classes: int
-        :param dropout: Dropout fraction, between two convolutional layers
+        :param dropout: Dropout fraction, between two convolutional layers                              
         :type dropout: float
         """
         
-        super(GNNConv, self).__init__()
+        super(GNNConv, self).__init__()                                                                 # Ensures that all necessary inherited components are configured correctly.
         self.g = g
-        self.layers = nn.ModuleList()
+        self.layers = nn.ModuleList()                                                                   # Create an (empty) list 'ModuleList', which will keep track of all the layers that the model is composed of.
         # input layer
-        self.layers.append(GraphConv(in_feats, hidden_size, activation=F.relu))
+        self.layers.append(GraphConv(in_feats, hidden_size, activation=F.relu))                         # Adds a graphconv layer from the dgl.nn.pytorch library with relu activation function.
         # output layer
-        self.layers.append(GraphConv(hidden_size, num_classes))
-        self.dropout = nn.Dropout(p=dropout)
+        self.layers.append(GraphConv(hidden_size, num_classes))                                         # Adds a graphconv layer from the dgl.nn.pytorch library, without activation function.
+        self.dropout = nn.Dropout(p=dropout)                                                            # Only one hidden layer. Dropout to avoid overfitting.
 
     def forward(self, features):
         """
@@ -232,10 +232,10 @@ class GNNConv(nn.Module):
         """
             
         h = features
-        for i, layer in enumerate(self.layers):
-            if i != 0:
-                h = self.dropout(h)
-            h = layer(self.g, h)
+        for i, layer in enumerate(self.layers):                                                         # Network with only one hidden layer the architecture is:
+            if i != 0:                                                                                  # GraphConv(in_feats, hidden_size, activation=F.relu)
+                h = self.dropout(h)                                                                     # Dropout(p=dropout)
+            h = layer(self.g, h)                                                                        # GraphConv(hidden_size, num_classes)
         return h
 
 
