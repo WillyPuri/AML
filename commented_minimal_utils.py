@@ -333,7 +333,7 @@ def loss_func_color_hard(coloring, nx_graph):
     return cost_
 
 #################################################### ADDED ##############################################################
-def SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, model_name):
+def SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, problem_type):
     print(f"\nSaving best model for epoch: {epoch+1}")
     
     torch.save({
@@ -342,7 +342,7 @@ def SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, model_name):
         'nx_graph': nx_graph,
         'best_coloring': best_coloring,
         'optimizer_state_dict': optimizer.state_dict(),
-    }, f'best_model_{model_name}.pt')
+    }, f'best_model_{problem_type}.pt')
 ####################################################################################################################
 
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
@@ -419,7 +419,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             best_loss = loss
             best_cost = cost_hard
             best_coloring = coloring
-            SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, model_name)
+            SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, problem_type)
 
         # Early stopping check
         # If loss increases or change in loss is too small, trigger
