@@ -425,7 +425,8 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     cnt = 0  # track number times early stopping is triggered
 
     # Initialize lists to track losses and epochs
-    loss_list = []
+    soft_loss_list = []
+    hard_loss_list = []
     epoch_list = []
 
     # IN THE FOLLOWING THE HARD_LOSS (H_potts IN THE PAPER) IS CALLED cost_hard, 
@@ -476,7 +477,8 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
         
 
         # Append current loss and epoch to lists
-        loss_list.append(loss.item())
+        soft_loss_list.append(loss.item())
+        hard_loss_list.append(cost_hard.item())
         epoch_list.append(epoch)
         
         # tracking: print intermediate loss at regular interval
@@ -495,4 +497,4 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     final_coloring = torch.argmax(probs, 1)
     print(f'Final coloring: {final_coloring}, soft loss: {final_loss}')
 
-    return probs, best_coloring, best_loss, final_coloring, final_loss, epoch, loss_list, epoch_list
+    return probs, best_coloring, best_loss, final_coloring, final_loss, epoch, soft_loss_list, soft_loss_list, epoch_list
