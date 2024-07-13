@@ -308,7 +308,7 @@ def loss_func_mod(probs, adj_tensor):
     """
 
     # Multiply probability vectors, then filter via elementwise application of adjacency matrix.
-    #  Divide by 2 to adjust for symmetry about the diagonal                                            # H_{potts} discussed in the paper. probs is not one-hot encoded variables, but probabilities.
+    #  Divide by 2 to adjust for symmetry about the diagonal                                            # L_{potts} discussed in the paper. probs is not one-hot encoded variables, but probabilities.
     loss_ = torch.mul(adj_tensor, (probs @ probs.T)).sum() / 2                                          # This is the difference between soft and hard loss, one uses the probabilities tensor and one                                          
                                                                                                         # the one-hot encoded representation.
     return loss_
@@ -332,6 +332,33 @@ def loss_func_color_hard(coloring, nx_graph):
         cost_ += 1*(coloring[u] == coloring[v])*(u != v)                                                # should it be devided by 2 (bidirectional graph)?
     return cost_
 
+
+class SaveBestModel:
+    def __init__(self, best_valid_loss=float('inf')): #object initialized with best_loss = +infinite
+        self.best_valid_loss = best_valid_loss
+
+    def __call__(
+        self, current_valid_loss,
+        epoch, model, optimizer, criterion, metric,
+    ):
+        if current_valid_loss < self.best_valid_loss:
+            self.best_valid_loss = current_valid_loss
+
+            print(f"\nBest validation loss: {self.best_valid_loss}")
+            print(f"\nSaving best model for epoch: {epoch+1}\n")
+
+            # method to save a model (the state_dict: a python dictionary object that
+            # maps each layer to its parameter tensor) and other useful parametrers
+            # see: https://pytorch.org/tutorials/beginner/saving_loading_models.html
+
+            torch.save({'model' : model,
+                'epoch': epoch+1,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': criterion,
+                'metric': metric,
+                }, 'best_model.pt')
+
 # THE FOLLOWING 2 FUNCTIONS WERE WRITTEN FROM SCRATCH
 class SaveBestModel:
     def __init__(self, model_name='MODELNAME', best_valid_loss=float('inf')): #object initialized with best_loss = +infinite
@@ -345,7 +372,7 @@ class SaveBestModel:
             self.best_valid_loss = current_valid_loss
 
             #print(f"\nBest validation loss: {self.best_valid_loss}")
-            #print(f"\nSaving best model for epoch: {epoch+1}\n")
+            print(f"\nSaving best model for epoch: {epoch+1}\n")
 
             # method to save a model (the state_dict: a python dictionary object that
             # maps each layer to its parameter tensor) and other useful parametrers
@@ -374,7 +401,6 @@ class QuickSaveModel:
                 'metric': metric,
                 }, self.model_name+'.pt')
 
-# CHANGED THE EPOCHS FROM int(1e5) TO 3000
 # ADDED PROBLEM_TYPE TO SAVE THE MODELS EVERY 1000 EPOCHS
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
                      number_epochs=int(1e5), patience=1000, tolerance=1e-4, seed=1):
