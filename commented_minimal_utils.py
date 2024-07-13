@@ -185,7 +185,7 @@ class GNNSage(nn.Module):
                 h = self.dropout(h)                                                                       # Dropout(p=dropout)
             h = layer(self.g, h)                                                                          # SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu)
 
-        return h
+        return h                                                                                          # h_{\nu}^{k} message passing k = num_layers, \nu = num_nodes
 
 
 # Define GNN GraphConv object
