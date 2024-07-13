@@ -339,7 +339,7 @@ def SaveBestModel(epoch, net, embed, nx_graph, optimizer, best_coloring, problem
     
     torch.save({
         'epoch': epoch+1,
-        'model_state_dict': net.state_dict()
+        'model_state_dict': net.state_dict(),
         'embed_state_dict': embed.state_dict(),
         'nx_graph': nx_graph,
         'best_coloring': best_coloring,
