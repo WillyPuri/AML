@@ -474,4 +474,4 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     final_coloring = torch.argmax(probs, 1)
     print(f'Final coloring: {final_coloring}, soft loss: {final_loss}')
 
-    return probs, best_coloring, best_loss, final_coloring, final_loss, epoch, soft_loss_list, soft_loss_list, epoch_list
+    return probs, best_coloring, best_loss, final_coloring, final_loss, epoch, soft_loss_list, hard_loss_list, epoch_list
