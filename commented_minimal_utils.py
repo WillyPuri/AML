@@ -356,7 +356,7 @@ def LoadSavedModel(file_path):
     best_coloring = checkpoint['best_coloring']
     optimizer_state_dict = checkpoint['optimizer_state_dict']
 
-    return epoch, model_state_dict, nx_graph, best_coloring, optimizer_state_dict
+    return epoch, model_state_dict, embed_state_dict, nx_graph, best_coloring, optimizer_state_dict
 ####################################################################################################################
 
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
