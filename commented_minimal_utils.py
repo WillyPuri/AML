@@ -299,7 +299,7 @@ def loss_func_mod(probs, adj_tensor):
     """
     Function to compute cost value based on soft assignments (probabilities)
 
-    :param probs: Probability vector, of each node belonging to each class
+    :param probs: Probability vector, of each node belonging to each class                             # It is a matrix that indicates for each node which color it has.
     :type probs: torch.tensor
     :param adj_tensor: Adjacency matrix, containing internode weights
     :type adj_tensor: torch.tensor
