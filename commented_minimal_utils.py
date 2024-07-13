@@ -434,10 +434,10 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     for epoch in range(number_epochs):
 
         # get soft prob assignments
-        logits = net(inputs)                                                                 # Get the values from the model ()
+        logits = net(inputs)                                                                 # Get values ​​from model (logits.shape = (num_nodes, classes)). Each subtensor is composed of real numbers
 
         # apply softmax for normalization
-        probs = F.softmax(logits, dim=1)                                                     # 
+        probs = F.softmax(logits, dim=1)                                                     # Transform the logit value into a probability, with sum over each subtensor equal to 1.
 
         # get cost value with POTTS cost function
         loss = loss_func_mod(probs, adj_mat)
