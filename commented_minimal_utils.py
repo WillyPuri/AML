@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import random
 import numpy as np
 import os
+import pickle
 
 from dgl.nn.pytorch import SAGEConv
 from dgl.nn.pytorch import GraphConv
@@ -343,6 +344,17 @@ def SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, problem_type):
         'best_coloring': best_coloring,
         'optimizer_state_dict': optimizer.state_dict(),
     }, f'best_model_{problem_type}.pt')
+
+def LoadSavedModel(file_path):
+    checkpoint = torch.load(file_path)
+
+    epoch = checkpoint['epoch']
+    model_state_dict = checkpoint['model_state_dict']
+    nx_graph = checkpoint['nx_graph']
+    best_coloring = checkpoint['best_coloring']
+    optimizer_state_dict = checkpoint['optimizer_state_dict']
+
+    return epoch, model_state_dict, nx_graph, best_coloring, optimizer_state_dict
 ####################################################################################################################
 
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
