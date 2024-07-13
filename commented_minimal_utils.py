@@ -363,7 +363,7 @@ class QuickSaveModel:
     def __init__(self, model_name='MODELNAME'):
         self.model_name = model_name
     def __call__(
-        self, current_valid_loss,
+        self, current_loss,
         epoch, model, optimizer, criterion, metric,
     ):
         torch.save({'model' : model,
