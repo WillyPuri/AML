@@ -258,14 +258,14 @@ def get_gnn(g, n_nodes, gnn_hypers, opt_params, torch_device, torch_dtype):
     :rtype: GNN_Conv or GNN_SAGE, torch.nn.Embedding, torch.optim.AdamW
     """
 
-    try:
+    try:                                                                                               # If the seed is specified in gnn_hypers => it is used.
         print(f'Function get_gnn(): Setting seed to {gnn_hypers["seed"]}')
-        set_seed(gnn_hypers['seed'])
-    except KeyError:
+        set_seed(gnn_hypers['seed'])                                                                   # Here the library function 'set_seed' is called which sets all objects to the same seed.
+    except KeyError:                                                                                   # If the seed is not specified (KeyError) => seed = 0 (default).
         print('!! Function get_gnn(): Seed not specified in gnn_hypers object. Defaulting to 0 !!')
         set_seed(0)
 
-    model = gnn_hypers['model']
+    model = gnn_hypers['model']                                                                        # Here all the hyperparameter values ​​are extracted from gnn_hypers.
     dim_embedding = gnn_hypers['dim_embedding']
     hidden_dim = gnn_hypers['hidden_dim']
     dropout = gnn_hypers['dropout']
@@ -274,23 +274,23 @@ def get_gnn(g, n_nodes, gnn_hypers, opt_params, torch_device, torch_dtype):
 
     # instantiate the GNN
     print(f'Building {model} model...')
-    if model == "GraphConv":
+    if model == "GraphConv":                                                                           # The two previously described models are created.
         net = GNNConv(g, dim_embedding, hidden_dim, number_classes, dropout)
     elif model == "GraphSAGE":
         net = GNNSage(g, dim_embedding, hidden_dim, number_classes, dropout, agg_type)
     else:
         raise ValueError("Invalid model type input! Model type has to be in one of these two options: ['GraphConv', 'GraphSAGE']")
 
-    net = net.type(torch_dtype).to(torch_device)
-    embed = nn.Embedding(n_nodes, dim_embedding)
-    embed = embed.type(torch_dtype).to(torch_device)
+    net = net.type(torch_dtype).to(torch_device)                                                       # converts the data to the specified 'torch_dtype' and moves them to device.
+    embed = nn.Embedding(n_nodes, dim_embedding)                                                       # Creates the representation of the graph nodes in a space of dimension 'dim_embedding'.
+    embed = embed.type(torch_dtype).to(torch_device)                                                   # converts the Embedded data to the specified 'torch_dtype' and moves them to device.
 
     # set up Adam optimizer
-    params = chain(net.parameters(), embed.parameters())
-
+    params = chain(net.parameters(), embed.parameters())                                               # It is a function of the itertools library. It concatenates the parameters of net and embed into a single set of parameters.
+                                                                                                       # It is useful for optimization.
     print('Building ADAM-W optimizer...')
-    optimizer = torch.optim.AdamW(params, **opt_params, weight_decay=1e-2)
-
+    optimizer = torch.optim.AdamW(params, **opt_params, weight_decay=1e-2)                             # AdamW optimizer. **opt_parms transforms the dictionary opt_parms in a variable-value set.
+                                                                                                       # In this way all the parameters needed for optimization are passed, such as the lr.
     return net, embed, optimizer
 
 
