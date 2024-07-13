@@ -333,31 +333,16 @@ def loss_func_color_hard(coloring, nx_graph):
     return cost_
 
 #################################################### ADDED ##############################################################
-class SaveBestModel:
-    def __init__(self, model_name='MODELNAME', best_loss=float('inf')): #object initialized with best_loss = +infinite
-        self.best_loss = best_loss
-        self.model_name = model_name
-    def __call__(
-        self, current_loss,
-        epoch, model, optimizer, criterion, metric,
-    ):
-        if current_loss < self.best_loss:
-            self.best_loss = current_loss
-
-            #print(f"\nBest validation loss: {self.best_loss}")
-            print(f"\nSaving best model for epoch: {epoch+1}")
-
-            # method to save a model (the state_dict: a python dictionary object that
-            # maps each layer to its parameter tensor) and other useful parametrers
-            # see: https://pytorch.org/tutorials/beginner/saving_loading_models.html
-
-            torch.save({'model' : model,
-                'epoch': epoch+1,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'loss': criterion,
-                'metric': metric,
-                }, 'best_model_'+self.model_name+'.pt')
+def SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, model_name):
+    print(f"\nSaving best model for epoch: {epoch+1}")
+    
+    torch.save({
+        'epoch': epoch+1,
+        'model_state_dict': net.state_dict(),
+        'nx_graph': nx_graph,
+        'best_coloring': best_coloring,
+        'optimizer_state_dict': optimizer.state_dict(),
+    }, f'best_model_{model_name}.pt')
 ####################################################################################################################
 
 def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, problem_type,
@@ -396,8 +381,6 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     set_seed(seed)
 
     inputs = embed.weight
-    # ADDED
-    save_best_model = SaveBestModel(f'{problem_type}')
 
     # Tracking
     best_cost = torch.tensor(float('Inf'))  # high initialization
@@ -436,6 +419,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             best_loss = loss
             best_cost = cost_hard
             best_coloring = coloring
+            SaveBestModel(epoch, net, nx_graph, optimizer, best_coloring, model_name)
 
         # Early stopping check
         # If loss increases or change in loss is too small, trigger
@@ -455,9 +439,6 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
         optimizer.zero_grad()  # clear gradient for step
         loss.backward()  # calculate gradient through compute graph
         optimizer.step()  # take step, update weights
-        
-        # ADDED
-        save_best_model(loss, epoch, net, optimizer, loss_func_mod, loss_func_color_hard)
         
 
         # Append current loss and epoch to lists
