@@ -165,7 +165,7 @@ class GNNSage(nn.Module):
         self.layers = nn.ModuleList()                                                                    # Create an (empty) list 'ModuleList', which will keep track of all the layers that the model is composed of.
         # input layer
         self.layers.append(SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu))                 # Adds a SAGEConv layer from the dgl.nn.pytorch library with relu activation function and aggregation 'mean'
-        # output layer
+        # output layer                                                                                   
         self.layers.append(SAGEConv(hidden_size, num_classes, agg_type))                                 # Adds a SAGEConv layer from the dgl.nn.pytorch library with aggregation 'mean' but without relu activation function.
         self.dropout = nn.Dropout(p=dropout)                                                             # Dropout to avoid overfitting.
 
@@ -181,11 +181,11 @@ class GNNSage(nn.Module):
         """
         h = features                                                                                      
         for i, layer in enumerate(self.layers):                                                           # Network with only one hidden layer the architecture is:
-            if i != 0:                                                                                    # SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu)
+            if i != 0:                                                                                    # SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu) -> Aggregation
                 h = self.dropout(h)                                                                       # Dropout(p=dropout)
-            h = layer(self.g, h)                                                                          # SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu)
+            h = layer(self.g, h)                                                                          # SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu) -> Update
 
-        return h                                                                                          # h_{\nu}^{k} message passing k = num_layers, \nu = num_nodes
+        return h                                                                                          # h_{\nu}^{k} message passing k = num_layers (=1), \nu = num_nodes
 
 
 # Define GNN GraphConv object
@@ -234,10 +234,10 @@ class GNNConv(nn.Module):
             
         h = features
         for i, layer in enumerate(self.layers):                                                         # Network with only one hidden layer the architecture is:
-            if i != 0:                                                                                  # GraphConv(in_feats, hidden_size, activation=F.relu)
+            if i != 0:                                                                                  # GraphConv(in_feats, hidden_size, activation=F.relu)  -> Aggregation
                 h = self.dropout(h)                                                                     # Dropout(p=dropout)
-            h = layer(self.g, h)                                                                        # GraphConv(hidden_size, num_classes)
-        return h
+            h = layer(self.g, h)                                                                        # GraphConv(hidden_size, num_classes)  -> Update
+        return h                                                                                        # h_{\nu}^{k} message passing k = num_layers (=1), \nu = num_nodes
 
 
 # Construct graph to learn on #
