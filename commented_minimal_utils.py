@@ -484,7 +484,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
         # tracking: print intermediate loss at regular interval
         if epoch % 1000 == 0:
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
-            print('Epoch %d | Discrete Cost: %.5f' % (epoch, cost_hard.item()))
+            print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
             quick_save_model = QuickSaveModel(f'quick_{problem_type}_{epoch}')
             quick_save_model(loss, epoch, net, optimizer, loss_func_mod, loss_func_color_hard)
 
