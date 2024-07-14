@@ -335,7 +335,7 @@ def loss_func_color_hard(coloring, nx_graph):
 
 #################################################### ADDED ##############################################################
 def SaveModel(epoch, net, embed, nx_graph, optimizer, best_coloring, problem_type):
-    print(f"\nSaving model for epoch: {epoch+1}\n")
+    print(f"\nSaving {problem_type} for epoch: {epoch+1}\n")
     
     torch.save({
         'epoch': epoch+1,
