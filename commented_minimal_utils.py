@@ -334,8 +334,8 @@ def loss_func_color_hard(coloring, nx_graph):
     return cost_
 
 #################################################### ADDED ##############################################################
-def SaveBestModel(epoch, net, embed, nx_graph, optimizer, best_coloring, problem_type):
-    print(f"\nSaving best model for epoch: {epoch+1}\n")
+def SaveModel(epoch, net, embed, nx_graph, optimizer, best_coloring, problem_type):
+    print(f"\nSaving model for epoch: {epoch+1}\n")
     
     torch.save({
         'epoch': epoch+1,
@@ -344,7 +344,7 @@ def SaveBestModel(epoch, net, embed, nx_graph, optimizer, best_coloring, problem
         'nx_graph': nx_graph,
         'best_coloring': best_coloring,
         'optimizer_state_dict': optimizer.state_dict(),
-    }, f'best_model_{problem_type}.pt')
+    }, f'{problem_type}.pt')
 
 def LoadSavedModel(file_path):
     checkpoint = torch.load(file_path)
@@ -433,7 +433,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             best_loss = loss
             best_cost = cost_hard
             best_coloring = coloring
-            SaveBestModel(epoch, net,embed, nx_graph, optimizer, best_coloring, problem_type)
+            SaveModel(epoch, net,embed, nx_graph, optimizer, best_coloring, 'best_model_'+problem_type)
             
         # Early stopping check
         # If loss increases or change in loss is too small, trigger
@@ -465,7 +465,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
             print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
 
-    SaveBestModel(epoch, net,embed, nx_graph, optimizer, best_coloring, 'final_'+problem_type)
+    SaveModel(epoch, net,embed, nx_graph, optimizer, best_coloring, 'final_epoch_'+problem_type)
 
     # Print final loss
     print('Epoch %d | Final loss: %.5f' % (epoch, loss.item()))
