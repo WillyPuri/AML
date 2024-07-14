@@ -465,6 +465,8 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
             print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
 
+    SaveBestModel(epoch, net,embed, nx_graph, optimizer, best_coloring, 'final_'+problem_type)
+
     # Print final loss
     print('Epoch %d | Final loss: %.5f' % (epoch, loss.item()))
     print('Epoch %d | Lowest discrete cost: %.5f' % (epoch, best_cost))
