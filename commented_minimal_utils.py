@@ -129,8 +129,13 @@ def build_graph_from_color_file(fname, node_offset=-1, parent_fpath=''):
     nx_graph.add_edges_from(nx_temp.edges)                                                         # Import edges into ordered graph.
 
     return nx_graph
-
-
+"""
+ACTIVATION FUNCTION CHOICE FOR BOTH MODELS
+In the first layer relu activation is chosen because it sends a strong, illimited initial signal (it does not saturate), 
+it does not suffer the problem of vanishing gradient. Usually it creates sparsification issues, but in this case it is 
+unlucky as the net is shallow.
+Softmax activation of the models return is chosen because it outputs a probability.
+"""
 # Define GNN GraphSage object
 class GNNSage(nn.Module):
     """
@@ -164,7 +169,9 @@ class GNNSage(nn.Module):
         
         self.layers = nn.ModuleList()                                                                    # Create an (empty) list 'ModuleList', which will keep track of all the layers that the model is composed of.
         # input layer
-        self.layers.append(SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu))                 # Adds a SAGEConv layer from the dgl.nn.pytorch library with relu activation function and aggregation 'mean'
+        self.layers.append(SAGEConv(in_feats, hidden_size, agg_type, activation=F.relu))                 # Adds a SAGEConv layer from the dgl.nn.pytorch library with relu activation function
+                                                                                                         # The Sage aggregation type is a mean that uses learnable weights instead of leveraging structural informations as with the normalization in GraphConv
+                                                                                                         # The default value of the bias is True, thus this is a learnable parameter
         # output layer                                                                                   
         self.layers.append(SAGEConv(hidden_size, num_classes, agg_type))                                 # Adds a SAGEConv layer from the dgl.nn.pytorch library with aggregation 'mean' but without relu activation function.
         self.dropout = nn.Dropout(p=dropout)                                                             # Dropout to avoid overfitting.
@@ -217,6 +224,10 @@ class GNNConv(nn.Module):
         self.layers = nn.ModuleList()                                                                   # Create an (empty) list 'ModuleList', which will keep track of all the layers that the model is composed of.
         # input layer
         self.layers.append(GraphConv(in_feats, hidden_size, activation=F.relu))                         # Adds a graphconv layer from the dgl.nn.pytorch library with relu activation function.
+                                                                                                        # The default value of the bias is True, thus this is a learnable parameter
+                                                                                                        # No weight matrix is used as the weights are the inverse of the square root of the product
+                                                                                                        # of the node degrees of adjacent nodes. This normalization prevents the training from having 
+                                                                                                        # instabilities due to areas of the graph having higher instabilities than others
         # output layer
         self.layers.append(GraphConv(hidden_size, num_classes))                                         # Adds a graphconv layer from the dgl.nn.pytorch library, without activation function.
         self.dropout = nn.Dropout(p=dropout)                                                            # Only one hidden layer. Dropout to avoid overfitting.
