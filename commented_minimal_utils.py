@@ -475,14 +475,14 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
             print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
 
-    SaveModel(epoch, net,embed, nx_graph, optimizer, coloring, 'final_epoch_'+problem_type)             # 
+    SaveModel(epoch, net,embed, nx_graph, optimizer, coloring, 'final_epoch_'+problem_type)             # Save the parameters at the last epoch to be able to resume training.
 
     # Print final loss
     print('Epoch %d | Final loss: %.5f' % (epoch, loss.item()))
     print('Epoch %d | Lowest discrete cost: %.5f' % (epoch, best_cost))
 
     # Final coloring
-    final_loss = loss
+    final_loss = loss                                                                                   # Final model condition output.
     final_coloring = torch.argmax(probs, 1)
     print(f'Final coloring: {final_coloring}, soft loss: {final_loss}')
 
