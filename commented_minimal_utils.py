@@ -433,15 +433,15 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
         probs = F.softmax(logits, dim=1)                                                                # Transform the logit value into a probability, with sum over each subtensor equal to 1.
 
         # get cost value with POTTS cost function
-        loss = loss_func_mod(probs, adj_mat)                                                            # Calculate the initial soft loss function 
+        loss = loss_func_mod(probs, adj_mat)                                                            # Calculate the soft loss of the model.
 
         # get cost based on current hard class assignments
         # update cost if applicable
         coloring = torch.argmax(probs, dim=1)                                                           # Compute the index of the maximum value of probs along a dim=1 i.e. for each node it returns an integer corresponding to the color.
-        cost_hard = loss_func_color_hard(coloring, nx_graph)                                            # Calculate the initial Hard loss function
+        cost_hard = loss_func_color_hard(coloring, nx_graph)                                            # Calculate the Hard loss of the model.
 
-        if cost_hard < best_cost:
-            best_loss = loss
+        if cost_hard < best_cost:                                                                       # If the new hard loss value is lower than the previous ones => the variables best_loss, 
+            best_loss = loss                                                                            # best_cost, best_coloring are updated and the model is saved.
             best_cost = cost_hard
             best_coloring = coloring
             SaveModel(epoch, net,embed, nx_graph, optimizer, best_coloring, 'best_model_'+problem_type)
