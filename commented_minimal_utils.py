@@ -349,23 +349,23 @@ def SaveModel(epoch, net, embed, nx_graph, optimizer, best_coloring, problem_typ
     print(f"\nSaving {problem_type} for epoch: {epoch+1}\n")
     
     torch.save({
-        'epoch': epoch+1,
-        'model_state_dict': net.state_dict(),
-        'embed_state_dict': embed.state_dict(),
-        'nx_graph': nx_graph,
-        'best_coloring': best_coloring,
-        'optimizer_state_dict': optimizer.state_dict(),
+        'epoch': epoch+1,                                                                               # Save the current epoch (incremented by 1 for convention)
+        'model_state_dict': net.state_dict(),                                                           # Save the state dictionary of the model (net)
+        'embed_state_dict': embed.state_dict(),                                                         # Save the state dictionary of the embedding model (embed)
+        'nx_graph': nx_graph,                                                                           # Save the NetworkX graph object (nx_graph)
+        'best_coloring': best_coloring,                                                                 # Save the best coloring solution found (best_coloring)
+        'optimizer_state_dict': optimizer.state_dict(),                                                 # Save the state dictionary of the optimizer (optimizer)
     }, f'{problem_type}.pt')
 
 def LoadSavedModel(file_path):
     checkpoint = torch.load(file_path)
 
-    epoch = checkpoint['epoch']
-    model_state_dict = checkpoint['model_state_dict']
-    embed_state_dict = checkpoint['embed_state_dict']
-    nx_graph = checkpoint['nx_graph']
-    best_coloring = checkpoint['best_coloring']
-    optimizer_state_dict = checkpoint['optimizer_state_dict']
+    epoch = checkpoint['epoch']                                                                         # Extract the epoch number from the checkpoint
+    model_state_dict = checkpoint['model_state_dict']                                                   # Extract the model state dictionary from the checkpoint
+    embed_state_dict = checkpoint['embed_state_dict']                                                   # Extract the embedding model state dictionary from the checkpoint
+    nx_graph = checkpoint['nx_graph']                                                                   # Extract the NetworkX graph object from the checkpoint
+    best_coloring = checkpoint['best_coloring']                                                         # Extract the best coloring solution from the checkpoint
+    optimizer_state_dict = checkpoint['optimizer_state_dict']                                           # Extract the optimizer state dictionary from the checkpoint
 
     return epoch, model_state_dict, embed_state_dict, nx_graph, best_coloring, optimizer_state_dict
 ####################################################################################################################
