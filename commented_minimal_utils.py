@@ -405,16 +405,16 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     print(f'Function run_gnn_training(): Setting seed to {seed}')
     set_seed(seed)
 
-    inputs = embed.weight
+    inputs = embed.weight                                                                               # Weight matrix of embedding layer.
 
-    # Tracking
-    #best_cost = torch.tensor(float('Inf'))  # high initialization
-    best_loss = torch.tensor(float('Inf'))
-    best_coloring = None
+    # Tracking                                                                                          # This variable is taken as an argument to the function and initialized there,
+    #best_cost = torch.tensor(float('Inf'))                                                             # So that training can be resumed later.
+    best_loss = torch.tensor(float('Inf'))                                                              # High initialization.
+    best_coloring = None                                                                                # best_coloring initialization.
 
     # Early stopping to allow NN to train to near-completion
-    prev_loss = 1.  # initial loss value (arbitrary)
-    cnt = 0  # track number times early stopping is triggered
+    prev_loss = 1.                                                                                      # Initial loss value (arbitrary).
+    cnt = 0                                                                                             # track number times early stopping is triggered
 
     # Initialize lists to track losses and epochs
     soft_loss_list = []
@@ -427,18 +427,18 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     for epoch in range(number_epochs):
 
         # get soft prob assignments
-        logits = net(inputs)                                                                 # Get values ​​from model (logits.shape = (num_nodes, classes)). Each subtensor is composed of real numbers
+        logits = net(inputs)                                                                            # Get values ​​from model (logits.shape = (num_nodes, classes)). Each subtensor is composed of real numbers
 
         # apply softmax for normalization
-        probs = F.softmax(logits, dim=1)                                                     # Transform the logit value into a probability, with sum over each subtensor equal to 1.
+        probs = F.softmax(logits, dim=1)                                                                # Transform the logit value into a probability, with sum over each subtensor equal to 1.
 
         # get cost value with POTTS cost function
-        loss = loss_func_mod(probs, adj_mat)
+        loss = loss_func_mod(probs, adj_mat)                                                            # Calculate the initial soft loss function 
 
         # get cost based on current hard class assignments
         # update cost if applicable
-        coloring = torch.argmax(probs, dim=1)
-        cost_hard = loss_func_color_hard(coloring, nx_graph)
+        coloring = torch.argmax(probs, dim=1)                                                           # Compute the index of the maximum value of probs along a dim=1 i.e. for each node it returns an integer corresponding to the color.
+        cost_hard = loss_func_color_hard(coloring, nx_graph)                                            # Calculate the initial Hard loss function
 
         if cost_hard < best_cost:
             best_loss = loss
