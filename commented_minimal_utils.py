@@ -413,7 +413,7 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
     best_coloring = None                                                                                # best_coloring initialization.
 
     # Early stopping to allow NN to train to near-completion
-    prev_loss = 1.                                                                                      # Initial loss value (arbitrary).
+    prev_loss = 1.                                                                                      # Initial initial soft loss value (arbitrary).
     cnt = 0                                                                                             # track number times early stopping is triggered
 
     # Initialize lists to track losses and epochs
@@ -448,35 +448,34 @@ def run_gnn_training(nx_graph, graph_dgl, adj_mat, net, embed, optimizer, proble
             
         # Early stopping check
         # If loss increases or change in loss is too small, trigger
-        if (abs(loss - prev_loss) <= tolerance) | ((loss - prev_loss) > 0):
-            cnt += 1
-        else:
-            cnt = 0
-        
-        # update loss tracking
-        prev_loss = loss
+        if (abs(loss - prev_loss) <= tolerance) | ((loss - prev_loss) > 0):                             # Control over the behavior of the loss. Enter the if 
+            cnt += 1                                                                                    # if there is an increase in the loss or if the difference respect to the previous epoch is too small. 
+        else:                                                                                           # cnt = count variable is increased.
+            cnt = 0                                                                                     # Reset the cnt variable to 0, to start a new counter.  
+    
+        prev_loss = loss                                                                                # Update loss tracking.
 
-        if cnt >= patience:
+        if cnt >= patience:                                                                             
             print(f'Stopping early on epoch {epoch}. Patience count: {cnt}')
-            break
+            break                                                                                       # If the cnt variable increases until it reaches the patience value, training is interrupted.
 
         # run optimization with backpropagation
-        optimizer.zero_grad()  # clear gradient for step
-        loss.backward()  # calculate gradient through compute graph
-        optimizer.step()  # take step, update weights
+        optimizer.zero_grad()                                                                           # Clear gradient for step.
+        loss.backward()                                                                                 # Calculate gradient through compute graph.
+        optimizer.step()                                                                                # Take step, update weights.
         
 
         # Append current loss and epoch to lists
-        soft_loss_list.append(loss.item())
-        hard_loss_list.append(cost_hard.item())
-        epoch_list.append(epoch)
+        soft_loss_list.append(loss.item())                                                              # Saving Soft loss in the list.
+        hard_loss_list.append(cost_hard.item())                                                         # Saving Hard loss in the list.
+        epoch_list.append(epoch)                                                                        # Saving epoch in the list.
         
         # tracking: print intermediate loss at regular interval
-        if epoch % 1000 == 0:
+        if epoch % 1000 == 0:                                                                           # Training status update every 1000 epochs.
             print('Epoch %d | Soft Loss: %.5f' % (epoch, loss.item()))
             print('Epoch %d | Hard Cost: %.5f' % (epoch, cost_hard.item()))
 
-    SaveModel(epoch, net,embed, nx_graph, optimizer, coloring, 'final_epoch_'+problem_type)
+    SaveModel(epoch, net,embed, nx_graph, optimizer, coloring, 'final_epoch_'+problem_type)             # 
 
     # Print final loss
     print('Epoch %d | Final loss: %.5f' % (epoch, loss.item()))
