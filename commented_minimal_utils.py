@@ -344,7 +344,7 @@ def loss_func_color_hard(coloring, nx_graph):
         cost_ += 1*(coloring[u] == coloring[v])*(u != v)                                                # should it be devided by 2 (bidirectional graph)?
     return cost_
 
-#################################################### ADDED ##############################################################
+#################################################### ADDED #########################################################
 def SaveModel(epoch, net, embed, nx_graph, optimizer, best_coloring, problem_type):
     print(f"\nSaving {problem_type} for epoch: {epoch+1}\n")
     
