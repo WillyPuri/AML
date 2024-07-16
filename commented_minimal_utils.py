@@ -221,6 +221,7 @@ class GNNConv(nn.Module):
         
         super(GNNConv, self).__init__()                                                                 # Ensures that all necessary inherited components are configured correctly.
         self.g = g
+        self.num_classes = num_classes
         self.layers = nn.ModuleList()                                                                   # Create an (empty) list 'ModuleList', which will keep track of all the layers that the model is composed of.
         # input layer
         self.layers.append(GraphConv(in_feats, hidden_size, activation=F.relu))                         # Adds a graphconv layer from the dgl.nn.pytorch library with relu activation function.
